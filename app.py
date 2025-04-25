@@ -1,9 +1,8 @@
-
 import os
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from PIL import Image
 import io
 
@@ -76,10 +75,10 @@ def predict_pothole():
     result = predict(image)
     return jsonify({'filename': file.filename, 'prediction': result})
 
-# Root route
+# Root route for UI
 @app.route('/')
 def home():
-    return jsonify({"message": "Pothole Detection API is running!"})
+    return render_template('index.html')
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
