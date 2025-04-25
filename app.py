@@ -5,9 +5,12 @@ import torchvision.transforms as transforms
 from flask import Flask, request, jsonify, render_template
 from PIL import Image
 import io
+from flask import Flask
+from flask_cors import CORS
 
-# Define Flask app
 app = Flask(__name__)
+CORS(app)
+
 
 # Define the CNN model architecture
 class CNNModel(nn.Module):

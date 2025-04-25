@@ -108,30 +108,38 @@
 
     <script>
         const form = document.getElementById('uploadForm');
+        const BACKEND_URL = window.location.hostname === "localhost"
+            ? "http://localhost:5000"
+            : "https://pothole-detection-model-4do4.onrender.com/"; 
+
         form.onsubmit = async function(event) {
             event.preventDefault();
 
             const formData = new FormData(form);
-            const response = await fetch('/predict', {
-                method: 'POST',
-                body: formData,
-            });
+            try {
+                const response = await fetch(`${BACKEND_URL}/predict`, {
+                    method: 'POST',
+                    body: formData,
+                });
 
-            const data = await response.json();
-            const resultDiv = document.getElementById('result');
-            resultDiv.style.display = "block";  // Make the result section visible
+                const data = await response.json();
+                const resultDiv = document.getElementById('result');
+                resultDiv.style.display = "block";
 
-            if (data.error) {
-                resultDiv.innerHTML = `<p class="error">Error: ${data.error}</p>`;
-            } else {
-                // Display the uploaded image
-                const imgElement = document.createElement('img');
-                const imgURL = URL.createObjectURL(formData.get('file'));
-                imgElement.src = imgURL;
+                if (data.error) {
+                    resultDiv.innerHTML = `<p class="error">Error: ${data.error}</p>`;
+                } else {
+                    const imgElement = document.createElement('img');
+                    const imgURL = URL.createObjectURL(formData.get('file'));
+                    imgElement.src = imgURL;
 
-                // Display the image and prediction result
-                resultDiv.innerHTML = `<p>File: ${data.filename}</p><p><strong>Prediction:</strong> ${data.prediction}</p>`;
-                resultDiv.appendChild(imgElement);
+                    resultDiv.innerHTML = `<p>File: ${data.filename}</p><p><strong>Prediction:</strong> ${data.prediction}</p>`;
+                    resultDiv.appendChild(imgElement);
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p class="error">Error: Failed to reach server.</p>`;
+                document.getElementById('result').style.display = "block";
+                console.error("Error:", error);
             }
         };
     </script>
